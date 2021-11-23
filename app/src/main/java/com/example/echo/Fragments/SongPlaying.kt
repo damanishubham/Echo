@@ -16,20 +16,12 @@ import com.cleveroad.audiovisualization.AudioVisualization
 import com.cleveroad.audiovisualization.GLAudioVisualizationView
 import com.example.echo.DataModels.Songs
 import com.example.echo.R
-import java.util.*
 import kotlin.collections.ArrayList
 import com.cleveroad.audiovisualization.DbmHandler
-
-import com.cleveroad.audiovisualization.VisualizerDbmHandler
-import com.example.echo.MainActivity
-import android.support.v4.content.ContextCompat.getSystemService
-
-import android.app.job.JobScheduler
 import android.os.Handler
-import android.support.v4.content.ContextCompat
 import android.widget.*
-import java.util.Calendar.SECOND
-import kotlin.random.Random
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 
 
 class SongPlaying : Fragment() {
@@ -61,6 +53,26 @@ class SongPlaying : Fragment() {
 
     var song: ArrayList<Songs>?=null
     var position=0
+    var handler = Handler()
+
+    var updateseekbar = object : Runnable
+    {
+        override fun run() {
+            seekBar?.max = mediaPlayer!!.duration
+            seekBar?.progress = mediaPlayer!!.currentPosition
+//            var t = mediaPlayer!!.currentPosition as Long
+//            var s = String.format(
+//                "%02d:%02d",
+//                java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(t),
+//                java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(t) -
+//                        java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(
+//                            java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(t)
+//                        )
+//            )
+//            seekbarpos?.text =s
+            handler.postDelayed(this,1000)
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +83,7 @@ class SongPlaying : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view = inflater.inflate(R.layout.fragment_song_playing, container, false)
+        val view = inflater.inflate(R.layout.fragment_song_playing, container, false)
         playpauseButton =view.findViewById(R.id.playPauseButton)
         nextSongButton= view.findViewById(R.id.nextSong)
         previousSongButton = view.findViewById(R.id.previousSong)
@@ -113,8 +125,8 @@ class SongPlaying : Fragment() {
         song  = arguments?.getParcelableArrayList<Songs>("song")
         position = arguments?.getInt("position")!!
 
-        songtitle?.text = song!![position!!].songTitle
-        songArtist?.text = song!![position!!].songArtist
+        songtitle?.text = song!![position].songTitle
+        songArtist?.text = song!![position].songArtist
 
         playpauseSong()
 
@@ -123,15 +135,13 @@ class SongPlaying : Fragment() {
         }
 
         nextSongButton?.setOnClickListener{
-            Log.d(TAG, "next button clicked,value of position: $position")
-            Log.d(TAG, "next button clicked,value of position: ${song!!.size}")
             if(position== song!!.size-1) {
                 position = 0
                 changeSong()
             }
             else
             {
-                position =position!!+1
+                position += 1
                 changeSong()
             }
 
@@ -145,7 +155,7 @@ class SongPlaying : Fragment() {
             }
             else
             {
-                position= position!! -1
+                position -= 1
                 changeSong()
             }
 
@@ -214,8 +224,8 @@ class SongPlaying : Fragment() {
 
     fun changeSong() {
         playactive=false
-        songtitle?.text = song!![position!!].songTitle
-        songArtist?.text = song!![position!!].songArtist
+        songtitle?.text = song!![position].songTitle
+        songArtist?.text = song!![position].songArtist
         mediaPlayer?.reset()
         playpauseSong()
     }
@@ -223,16 +233,19 @@ class SongPlaying : Fragment() {
 
     fun playpauseSong()
     {
-        try {
-            mediaPlayer?.setDataSource(mcontext as Context, Uri.parse(song!![position!!].songData))
-            mediaPlayer?.prepare()
-
-        } catch (e: Exception) {
-            Log.d(TAG, "onActivityCreated: In the exception track")
-            Log.d(TAG, "onActivityCreated: ${e.stackTrace}")
+        if(mediaPlayer!=null)
+        {
+            try {
+                mediaPlayer?.setDataSource(
+                    mcontext as Context,
+                    Uri.parse(song!![position].songData)
+                )
+                mediaPlayer?.prepare()
+            } catch (e: Exception) {
+                Log.d(TAG, "onActivityCreated: In the exception track")
+                Log.d(TAG, "onActivityCreated: ${e.stackTrace}")
+            }
         }
-
-
 
         playactive = if(playactive) {
             playpauseButton?.setBackgroundResource(R.drawable.play_icon)
@@ -242,35 +255,36 @@ class SongPlaying : Fragment() {
         } else {
             playpauseButton?.setBackgroundResource(R.drawable.pause_icon)
             mediaPlayer?.start()
+            handler.postDelayed(updateseekbar,1000)
             true
         }
         mediaPlayer?.setOnCompletionListener {
-
-            if(shuffleactive)
-            {
-                position = (0 until song!!.size).random()
-                changeSong()
-            }
-            else if (looping)
-            {
-                changeSong()
-            }
-            else
-            {
-                position += 1
-                changeSong()
+            when {
+                shuffleactive -> {
+                    position = (0 until song!!.size).random()
+                    changeSong()
+                }
+                looping -> {
+                    changeSong()
+                }
+                else -> {
+                    position += 1
+                    changeSong()
+                }
             }
         }
+
+        seekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (mediaPlayer != null && fromUser) {
+                    mediaPlayer?.seekTo(progress)
+                }
+            }
+        })
     }
 
-
-    fun updateSeekbar()
-    {
-        var len = mediaPlayer?.duration
-        var currentposition = mediaPlayer?.currentPosition
-
-
-    }
 
 
     override fun onPause() {
@@ -282,13 +296,4 @@ class SongPlaying : Fragment() {
         super.onResume()
         audioVizualizer?.onResume()
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
 }
