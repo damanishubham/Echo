@@ -1,0 +1,19 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Echo" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#00032a</item>
+        <item name="colorPrimaryDark">#00042a</item>
+        <item name="colorAccent">#ff4081</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.Echo.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Echo.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Echo.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>
