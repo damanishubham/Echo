@@ -31,6 +31,8 @@ class SongPlaying : Fragment() {
     var looping : Boolean =false
     var fav: Boolean =false
 
+    var favSong : Songs?=null
+
     var mcontext : Activity?=null
 
     var playpauseButton : ImageButton?=null
@@ -208,12 +210,14 @@ class SongPlaying : Fragment() {
             if(fav)
             {
                 favbutton?.setBackgroundResource(R.drawable.favorite_off)
+                favSong= song!![position]
                 fav=false
             }
             else
             {
                 fav=true
                 favbutton?.setBackgroundResource(R.drawable.favorite_on)
+                favSong= song!![position]
 
             }
         }
