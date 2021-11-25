@@ -22,6 +22,7 @@ import android.os.Handler
 import android.widget.*
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import java.util.concurrent.TimeUnit
 
 
 class SongPlaying : Fragment() {
@@ -62,19 +63,35 @@ class SongPlaying : Fragment() {
         override fun run() {
             seekBar?.max = mediaPlayer!!.duration
             seekBar?.progress = mediaPlayer!!.currentPosition
-//            var t = mediaPlayer!!.currentPosition as Long
-//            var s = String.format(
-//                "%02d:%02d",
-//                java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(t),
-//                java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(t) -
-//                        java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(
-//                            java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(t)
-//                        )
-//            )
-//            seekbarpos?.text =s
+
+            val songDuration = TimeUnit.MILLISECONDS.toMinutes(mediaPlayer!!.duration.toLong())
+
+            Log.d("SongPlaying", "Media player duration in minutes is $songDuration")
+
+            var t = mediaPlayer!!.currentPosition.toLong()
+            var s = String.format(
+                "%02d:%02d",
+                java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(t),
+                java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(t) -
+                        java.util.concurrent.TimeUnit.MINUTES.toSeconds(
+                            java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(t)
+                        )
+            )
+            seekbarpos?.text =s
+            seekbarEnd?.text = getSongDuration(mediaPlayer!!.duration.toLong())
             handler.postDelayed(this,1000)
         }
     }
+
+    private fun getSongDuration(durationInMillis: Long): String {
+        var duration = ""
+        val minutes = (durationInMillis/1000) / 60
+        val seconds = (durationInMillis/1000) % 60
+
+        duration = String.format("%02d:%02d", minutes, seconds)
+        return duration
+    }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
