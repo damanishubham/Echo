@@ -58,7 +58,7 @@ class SongPlaying : Fragment() {
     var position=0
     var handler = Handler()
 
-    var updateseekbar = object : Runnable
+    private var updateseekbar = object : Runnable
     {
         override fun run() {
             seekBar?.max = mediaPlayer!!.duration
@@ -68,13 +68,13 @@ class SongPlaying : Fragment() {
 
             Log.d("SongPlaying", "Media player duration in minutes is $songDuration")
 
-            var t = mediaPlayer!!.currentPosition.toLong()
-            var s = String.format(
+            val t = mediaPlayer!!.currentPosition.toLong()
+            val s = String.format(
                 "%02d:%02d",
-                java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(t),
-                java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(t) -
-                        java.util.concurrent.TimeUnit.MINUTES.toSeconds(
-                            java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(t)
+                TimeUnit.MILLISECONDS.toMinutes(t),
+                TimeUnit.MILLISECONDS.toSeconds(t) -
+                        TimeUnit.MINUTES.toSeconds(
+                            TimeUnit.MILLISECONDS.toMinutes(t)
                         )
             )
             seekbarpos?.text =s
@@ -84,7 +84,7 @@ class SongPlaying : Fragment() {
     }
 
     private fun getSongDuration(durationInMillis: Long): String {
-        var duration = ""
+        val duration: String
         val minutes = (durationInMillis/1000) / 60
         val seconds = (durationInMillis/1000) % 60
 
@@ -141,7 +141,7 @@ class SongPlaying : Fragment() {
         mediaPlayer = MediaPlayer()
         mediaPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
 
-        song  = arguments?.getParcelableArrayList<Songs>("song")
+        song  = arguments?.getParcelableArrayList("song")
         position = arguments?.getInt("position")!!
 
         songtitle?.text = song!![position].songTitle
@@ -243,7 +243,7 @@ class SongPlaying : Fragment() {
         audioVizualizer?.linkTo(vizualizerHandler)
     }
 
-    fun changeSong() {
+    private fun changeSong() {
         playactive=false
         songtitle?.text = song!![position].songTitle
         songArtist?.text = song!![position].songArtist
@@ -252,7 +252,7 @@ class SongPlaying : Fragment() {
     }
 
 
-    fun playpauseSong()
+    private fun playpauseSong()
     {
         if(mediaPlayer!=null)
         {
