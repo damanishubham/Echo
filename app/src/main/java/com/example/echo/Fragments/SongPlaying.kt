@@ -22,6 +22,8 @@ import android.os.Handler
 import android.widget.*
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import com.example.echo.Database.EchoDatabase
+import com.example.echo.Fragments.SongPlaying.static.favData
 import java.util.concurrent.TimeUnit
 
 
@@ -57,6 +59,10 @@ class SongPlaying : Fragment() {
     var song: ArrayList<Songs>?=null
     var position=0
     var handler = Handler()
+    object static {
+        var favData : EchoDatabase?=null
+    }
+
 
     private var updateseekbar = object : Runnable
     {
@@ -137,6 +143,8 @@ class SongPlaying : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+       favData = EchoDatabase(mcontext)
 
         mediaPlayer = MediaPlayer()
         mediaPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -227,17 +235,19 @@ class SongPlaying : Fragment() {
             if(fav)
             {
                 favbutton?.setBackgroundResource(R.drawable.favorite_off)
-                favSong= song!![position]
+                favData?.deleteSongs(song!![position])
                 fav=false
             }
             else
             {
                 fav=true
                 favbutton?.setBackgroundResource(R.drawable.favorite_on)
-                favSong= song!![position]
+                favData?.storeSongs(song!![position])
 
             }
         }
+
+        checkiffav()
 
         val vizualizerHandler = DbmHandler.Factory.newVisualizerHandler( mcontext as Context, 0)
         audioVizualizer?.linkTo(vizualizerHandler)
@@ -267,7 +277,7 @@ class SongPlaying : Fragment() {
                 Log.d(TAG, "onActivityCreated: ${e.stackTrace}")
             }
         }
-
+        checkiffav()
         playactive = if(playactive) {
             playpauseButton?.setBackgroundResource(R.drawable.play_icon)
             mediaPlayer?.pause()
@@ -306,6 +316,19 @@ class SongPlaying : Fragment() {
         })
     }
 
+    fun checkiffav()
+    {
+        if(favData?.checkSong(song!![position].songID) == true)
+        {
+            fav=true
+            favbutton?.setBackgroundResource(R.drawable.favorite_on)
+        }
+        else
+        {
+            favbutton?.setBackgroundResource(R.drawable.favorite_off)
+            fav=false
+        }
+    }
 
 
     override fun onPause() {
