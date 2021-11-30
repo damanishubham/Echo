@@ -23,6 +23,7 @@ import android.widget.*
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.echo.Database.EchoDatabase
+import com.example.echo.Fragments.HomeFragment.static.mediaPlayer
 import com.example.echo.Fragments.SongPlaying.static.favData
 import java.util.concurrent.TimeUnit
 
@@ -45,7 +46,6 @@ class SongPlaying : Fragment() {
     var loopButton : ImageButton?=null
     var songtitle : TextView?=null
     var songArtist : TextView?=null
-    var mediaPlayer:MediaPlayer?=null
     var seekBar: SeekBar?=null
     var seekbarEnd: TextView?=null
     var seekbarpos : TextView?=null
@@ -144,7 +144,7 @@ class SongPlaying : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-       favData = EchoDatabase(mcontext)
+        favData = EchoDatabase(mcontext)
 
         mediaPlayer = MediaPlayer()
         mediaPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -235,7 +235,7 @@ class SongPlaying : Fragment() {
             if(fav)
             {
                 favbutton?.setBackgroundResource(R.drawable.favorite_off)
-                favData?.deleteSongs(song!![position])
+                favData?.deleteSongs(song!![position].songID)
                 fav=false
             }
             else
@@ -253,7 +253,7 @@ class SongPlaying : Fragment() {
         audioVizualizer?.linkTo(vizualizerHandler)
     }
 
-    private fun changeSong() {
+    fun changeSong() {
         playactive=false
         songtitle?.text = song!![position].songTitle
         songArtist?.text = song!![position].songArtist
@@ -262,7 +262,7 @@ class SongPlaying : Fragment() {
     }
 
 
-    private fun playpauseSong()
+    fun playpauseSong()
     {
         if(mediaPlayer!=null)
         {

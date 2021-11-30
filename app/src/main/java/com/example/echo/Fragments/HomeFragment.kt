@@ -2,6 +2,7 @@ package com.example.echo.Fragments
 
 import android.app.Activity
 import android.content.Context
+import android.media.MediaPlayer
 import android.opengl.Visibility
 import android.os.Bundle
 import android.provider.MediaStore
@@ -30,6 +31,10 @@ class HomeFragment : Fragment() {
     var playpausebutton : ImageButton?=null
     var nowplayingsongtitle : TextView?=null
 
+    object static{
+        var mediaPlayer: MediaPlayer?=null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -45,6 +50,7 @@ class HomeFragment : Fragment() {
         playpausebutton = view.findViewById<ImageButton>(R.id.playPauseButton)
         nowplayingsongtitle = view.findViewById<TextView>(R.id.nowPlayingsongtitle)
         songlistRV = view.findViewById<RecyclerView>(R.id.songsRV)
+
         return view
     }
 
@@ -73,8 +79,8 @@ class HomeFragment : Fragment() {
             noSongs?.visibility =View.INVISIBLE
         }
 
-        var isplaying = arguments?.getBoolean("isplaying")
-        if(isplaying == true)
+
+        if(static.mediaPlayer!=null)
         {
             songPlayingWidget?.visibility =View.VISIBLE
         }
