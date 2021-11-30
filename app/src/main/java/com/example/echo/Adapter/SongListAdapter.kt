@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.example.echo.Adapter.SongListAdapter.static.songPlayingFragment
 import com.example.echo.DataModels.NavMenuData
 import com.example.echo.DataModels.Songs
 import com.example.echo.Fragments.SongPlaying
@@ -18,6 +19,11 @@ import com.example.echo.MainActivity
 import com.example.echo.R
 
 class SongListAdapter(val song : ArrayList<Songs>, val context : Context) : RecyclerView.Adapter<SongListAdapter.SongVH>() {
+
+    object static{
+        val songPlayingFragment = SongPlaying()
+    }
+
     class SongVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val songTitleTextView = itemView.findViewById(R.id.songName) as TextView
         val artistTextView = itemView.findViewById(R.id.artistName) as TextView
@@ -37,7 +43,6 @@ class SongListAdapter(val song : ArrayList<Songs>, val context : Context) : Recy
     override fun onBindViewHolder(viewHolder: SongVH, position: Int) {
         viewHolder.bindItems(song[position])
         viewHolder.songContainer.setOnClickListener{
-            val songPlayingFragment = SongPlaying()
             var args =Bundle()
             args.putParcelableArrayList("song",song)
             args.putInt("position",position)

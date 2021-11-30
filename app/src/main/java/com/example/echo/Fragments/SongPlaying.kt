@@ -25,12 +25,15 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.echo.Database.EchoDatabase
 import com.example.echo.Fragments.HomeFragment.static.mediaPlayer
 import com.example.echo.Fragments.SongPlaying.static.favData
+import com.example.echo.Fragments.SongPlaying.static.playactive
+import com.example.echo.Fragments.SongPlaying.static.position
+import com.example.echo.Fragments.SongPlaying.static.song
 import java.util.concurrent.TimeUnit
 
 
 class SongPlaying : Fragment() {
 
-    var playactive: Boolean =false
+
     var shuffleactive : Boolean =false
     var looping : Boolean =false
     var fav: Boolean =false
@@ -56,11 +59,13 @@ class SongPlaying : Fragment() {
     var audioVizualizer: AudioVisualization?=null
     var glView: GLAudioVisualizationView?=null
 
-    var song: ArrayList<Songs>?=null
-    var position=0
+
     var handler = Handler()
     object static {
         var favData : EchoDatabase?=null
+        var playactive: Boolean =false
+        var song: ArrayList<Songs>?=null
+        var position=0
     }
 
 

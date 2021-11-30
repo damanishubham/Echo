@@ -75,5 +75,4 @@ class EchoDatabase : SQLiteOpenHelper {
         db.close()
     }
 
-
 }

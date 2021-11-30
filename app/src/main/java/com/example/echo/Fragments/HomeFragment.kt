@@ -7,6 +7,7 @@ import android.opengl.Visibility
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -18,6 +19,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.example.echo.Adapter.SongListAdapter
 import com.example.echo.DataModels.Songs
+import com.example.echo.Fragments.SongPlaying.static.position
+import com.example.echo.Fragments.SongPlaying.static.song
 import com.example.echo.MainActivity
 import com.example.echo.R
 
@@ -83,7 +86,43 @@ class HomeFragment : Fragment() {
         if(static.mediaPlayer!=null)
         {
             songPlayingWidget?.visibility =View.VISIBLE
+            nowplayingsongtitle?.text = SongPlaying.static.song!![position].songTitle
+            if(SongPlaying.static.playactive)
+            {
+                playpausebutton?.setBackgroundResource(R.drawable.pause_icon)
+            }
+            else
+            {
+                playpausebutton?.setBackgroundResource(R.drawable.play_icon)
+            }
         }
+        else
+        {
+            songPlayingWidget?.visibility =View.INVISIBLE
+        }
+
+        playpausebutton?.setOnClickListener {
+            SongPlaying.static.playactive = if(SongPlaying.static.playactive) {
+                playpausebutton?.setBackgroundResource(R.drawable.play_icon)
+                static.mediaPlayer?.pause()
+                false
+
+            } else {
+                playpausebutton?.setBackgroundResource(R.drawable.pause_icon)
+                static.mediaPlayer?.start()
+                true
+            }
+        }
+
+
+        songPlayingWidget?.setOnClickListener{
+            (context as FragmentActivity).supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, SongListAdapter.static.songPlayingFragment,"SongPlayingFragment")
+                .addToBackStack("HomeFragment")
+                .commit()
+        }
+
     }
 
     fun getsongs() : ArrayList<Songs>{
@@ -118,4 +157,5 @@ class HomeFragment : Fragment() {
         var adapter = SongListAdapter(songs,context)
         songlistRV?.adapter =adapter
     }
+
 }
